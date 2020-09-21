@@ -1,0 +1,13 @@
+diff --git a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c b/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
+index 080f6de..e06667d 100644
+--- a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
++++ b/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
+@@ -303,7 +303,7 @@ static pci_ers_result_t adf_slot_reset(struct pci_dev *pdev)
+ 		pr_err("QAT: Can't find acceleration device\n");
+ 		return PCI_ERS_RESULT_DISCONNECT;
+ 	}
+-	pci_cleanup_aer_uncorrect_error_status(pdev);
++	pci_aer_clear_nonfatal_status(pdev);
+ 	if (adf_dev_aer_schedule_reset(accel_dev, ADF_DEV_RESET_SYNC))
+ 		return PCI_ERS_RESULT_DISCONNECT;
+ 
