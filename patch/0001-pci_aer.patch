@@ -10,7 +10,7 @@ diff --git a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c b/quickassi
 index a6ce6df..545bb79 100644
 --- a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
 +++ b/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
-@@ -309,7 +309,7 @@ static pci_ers_result_t adf_slot_reset(struct pci_dev *pdev)
+@@ -303,7 +303,7 @@ static pci_ers_result_t adf_slot_reset(struct pci_dev *pdev)
  		pr_err("QAT: Can't find acceleration device\n");
  		return PCI_ERS_RESULT_DISCONNECT;
  	}
