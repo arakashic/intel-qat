@@ -12,7 +12,8 @@ apt -qyy install \
 	wget \
 	pkg-config \
 	libudev-dev
-VERSION=1.7.l.4.11.0-00001
+
+VERSION=1.7.l.4.10.0-00014
 wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
 mkdir qat-$VERSION
 tar xvf qat$VERSION.tar.gz -C qat-$VERSION

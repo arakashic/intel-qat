@@ -7,10 +7,10 @@ This simply updates the function call with the proper name (pci_aer_clear_nonfat
 
 ---
 diff --git a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c b/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
-index 080f6de..e06667d 100644
+index a6ce6df..545bb79 100644
 --- a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
 +++ b/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
-@@ -303,7 +303,7 @@ static pci_ers_result_t adf_slot_reset(struct pci_dev *pdev)
+@@ -304,7 +304,7 @@ static pci_ers_result_t adf_slot_reset(struct pci_dev *pdev)
  		pr_err("QAT: Can't find acceleration device\n");
  		return PCI_ERS_RESULT_DISCONNECT;
  	}
@@ -18,4 +18,3 @@ index 080f6de..e06667d 100644
 +	pci_aer_clear_nonfatal_status(pdev);
  	if (adf_dev_aer_schedule_reset(accel_dev, ADF_DEV_RESET_SYNC))
  		return PCI_ERS_RESULT_DISCONNECT;
- 

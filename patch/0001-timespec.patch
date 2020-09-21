@@ -9,7 +9,7 @@ Code received from users@dpdk.org, issue tracked under QATE-59888.
 
 ---
 diff --git a/quickassist/lookaside/access_layer/src/sample_code/performance/framework/linux/kernel_space/cpa_sample_code_utils.c b/quickassist/lookaside/access_layer/src/sample_code/performance/framework/linux/kernel_space/cpa_sample_code_utils.c
-index 99c36d5..010a505 100644
+index 4639834..523e376 100644
 --- a/quickassist/lookaside/access_layer/src/sample_code/performance/framework/linux/kernel_space/cpa_sample_code_utils.c
 +++ b/quickassist/lookaside/access_layer/src/sample_code/performance/framework/linux/kernel_space/cpa_sample_code_utils.c
 @@ -107,6 +107,8 @@ atomic_t arrived;
@@ -22,13 +22,13 @@ index 99c36d5..010a505 100644
  /* Define a number for timeout */
  #define SAMPLE_CODE_MAX_LONG (0x7FFFFFFF)
 diff --git a/quickassist/qat/compat/qat_compat.h b/quickassist/qat/compat/qat_compat.h
-index 8f1ef96..af2409f 100644
+index 2a02eaf..3515092 100644
 --- a/quickassist/qat/compat/qat_compat.h
 +++ b/quickassist/qat/compat/qat_compat.h
-@@ -474,4 +474,7 @@ static inline void pci_ignore_hotplug(struct pci_dev *dev)
- #define pci_cleanup_aer_uncorrect_error_status(pdev) \
- 	pci_aer_clear_nonfatal_status(pdev)
- #endif /* SUSE15 SP2 */
+@@ -466,4 +466,7 @@ static inline void pci_ignore_hotplug(struct pci_dev *dev)
+ #if (RHEL_RELEASE_CODE && RHEL_RELEASE_VERSION(7, 3) <= RHEL_RELEASE_CODE)
+ #define QAT_KPT_CAP_DISCOVERY
+ #endif
 +
 +#define timespec timespec64
 +#define getnstimeofday ktime_get_real_ts64
