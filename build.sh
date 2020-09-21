@@ -19,6 +19,7 @@ tar xvf qat$VERSION.tar.gz -C qat-$VERSION
 chown -R root:root  qat-$VERSION
 cd qat-$VERSION
 patch -p1 < ../patch/0001-pci_aer.patch
+patch -p1 < ../patch/0001-timespec.patch
 ./configure --enable-kapi
 make
 #cp pcm*.x ..

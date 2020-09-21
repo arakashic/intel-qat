@@ -1,3 +1,11 @@
+In kernel 5.7 the pci_cleanup_aer_uncorrect_error_status() function was
+renamed with the following commit:
+
+git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=894020fdd88c1e9a74c60b67c0f19f1c7696ba2f
+
+This simply updates the function call with the proper name (pci_aer_clear_nonfatal_status()).
+
+---
 diff --git a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c b/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
 index 080f6de..e06667d 100644
 --- a/quickassist/qat/drivers/crypto/qat/qat_common/adf_aer.c
