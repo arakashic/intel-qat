@@ -1,7 +1,9 @@
 #!/bin/sh -ex
-VERSION=202007
-wget https://github.com/opcm/pcm/archive/$VERSION.tar.gz -O $VERSION.tar.gz
-tar xvf $VERSION.tar.gz
-cd pcm-$VERSION
+VERSION=1.7.l.4.11.0-00001
+wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat-$VERSION.tar.gz
+tar xvf qat-$VERSION.tar.gz -C qat-$VERSION
+chown -R root:root  QAT
+cd qat-$VERSION
+./configure --enable-kapi
 make
-cp pcm*.x ..
+#cp pcm*.x ..

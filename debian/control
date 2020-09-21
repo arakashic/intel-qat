@@ -1,14 +1,12 @@
-Source: intel-pcm
+Source: intel-qat
 Section: admin
 Priority: optional
-Maintainer: Vladimir Vinogradenko <vladimirv@ixsystems.com>
-Build-Depends: debhelper-compat (= 12), make, g++, wget
+Maintainer: Kjeld Schouten-Lebbing <kjeld@schouten-lebbing.nl>
+Build-Depends: debhelper-compat (= 12), make, g++, wget, pciutils, pkg-config, libudev-dev
 Standards-Version: 4.4.0
-Homepage: https://min.io
+Homepage: https://github.com/Ornias1993/intel-qat
 
-Package: intel-pcm
+Package: intel-qat
 Architecture: amd64
-Description: Processor Counter Monitor (PCM)
- Processor Counter Monitor (PCM) is a set of tools to monitor
- performance and energy metrics of Intel® Core™, Xeon®, Atom™ and
- Xeon Phi™ processors.
+Description: Quick Assist Technology (QAT)
+ Intel® QuickAssist Technology (Intel® QAT) improves performance across applications and platforms
