@@ -4,6 +4,7 @@
 KERNEL_VERSION=$(uname -r)
 #export KERNEL_SOURCE_ROOT=/lib/modules/${KERNEL_VERSION}/build
 
+
 apt -qyy install \
 	linux-image-${KERNEL_VERSION}  \
 	linux-headers-${KERNEL_VERSION} \
