@@ -20,6 +20,7 @@ chown -R root:root  qat-$VERSION
 cd qat-$VERSION
 patch -p1 < ../patch/0001-pci_aer.patch
 patch -p1 < ../patch/0001-timespec.patch
+patch -p1 < ../patch/0001-cryptohash.patch
 ./configure --enable-kapi
 make
 #cp pcm*.x ..
