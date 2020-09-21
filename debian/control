@@ -2,7 +2,7 @@ Source: intel-qat
 Section: admin
 Priority: optional
 Maintainer: Kjeld Schouten-Lebbing <kjeld@schouten-lebbing.nl>
-Build-Depends: debhelper-compat (= 12), make, g++, wget, pciutils, pkg-config, libudev-dev
+Build-Depends: debhelper-compat (= 12), make, g++, wget, pciutils, pkg-config, libudev-dev, linux-image-amd64, linux-headers-amd64,
 Standards-Version: 4.4.0
 Homepage: https://github.com/Ornias1993/intel-qat
 
