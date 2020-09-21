@@ -17,6 +17,7 @@ mkdir qat-$VERSION
 tar xvf qat$VERSION.tar.gz -C qat-$VERSION
 chown -R root:root  qat-$VERSION
 cd qat-$VERSION
+git apply patch/0001-pci_aer.patch
 ./configure --enable-kapi
 make
 #cp pcm*.x ..
