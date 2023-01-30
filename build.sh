@@ -1,15 +1,15 @@
 #!/bin/sh -ex
 
 # Download kernel and headers
-ifndef KVERS
-KVERS=$(shell uname -r)
-endif
+# ifndef KVERS
+# KVERS=$(shell uname -r)
+# endif
 
-ifndef KSRC
-export KERNEL_SOURCE_ROOT=/lib/modules/${KVERS}/build
-else
+# ifndef KSRC
+# export KERNEL_SOURCE_ROOT=/lib/modules/${KVERS}/build
+# else
 export KERNEL_SOURCE_ROOT=${KSRC}
-endif
+# endif
 
 
 apt -qyy install \
