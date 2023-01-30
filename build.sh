@@ -1,8 +1,15 @@
 #!/bin/sh -ex
 
 # Download kernel and headers
-KERNEL_VERSION=$(uname -r)
-#export KERNEL_SOURCE_ROOT=/lib/modules/${KERNEL_VERSION}/build
+ifndef KVERS
+KVERS=$(shell uname -r)
+endif
+
+ifndef KSRC
+export KERNEL_SOURCE_ROOT=/lib/modules/${KVERS}/build
+else
+export KERNEL_SOURCE_ROOT=${KSRC}
+endif
 
 
 apt -qyy install \
@@ -12,7 +19,6 @@ apt -qyy install \
 	pkg-config \
 	libboost-all-dev \
 	libudev-dev
-apt-get source linux-image-$KERNEL_VERSION
 
 # VERSION=1.7.l.4.10.0-00014
 # wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
