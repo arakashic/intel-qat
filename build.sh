@@ -9,19 +9,17 @@ apt -qyy install \
 	linux-image-${KERNEL_VERSION}  \
 	linux-headers-${KERNEL_VERSION} \
 	pciutils \
+	yasm \
 	wget \
 	pkg-config \
+	libboost-all-dev \
 	libudev-dev
 
-VERSION=1.7.l.4.10.0-00014
-wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
+# VERSION=1.7.l.4.10.0-00014
+# wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
 mkdir intel-qat
-tar xvf qat$VERSION.tar.gz -C intel-qat
+tar xvf QAT.L.4.20.0-00001.tar.gz -C intel-qat
 chown -R root:root  intel-qat
 cd intel-qat
-patch -p1 < ../patch/0001-pci_aer.patch
-patch -p1 < ../patch/0001-timespec.patch
-patch -p1 < ../patch/0001-cryptohash.patch
 ./configure --enable-kapi
 make
-#cp pcm*.x ..
