@@ -6,8 +6,6 @@ KERNEL_VERSION=$(uname -r)
 
 
 apt -qyy install \
-	linux-image-${KERNEL_VERSION}  \
-	linux-headers-${KERNEL_VERSION} \
 	pciutils \
 	yasm \
 	wget \
