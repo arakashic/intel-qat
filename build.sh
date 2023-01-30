@@ -12,6 +12,7 @@ apt -qyy install \
 	pkg-config \
 	libboost-all-dev \
 	libudev-dev
+apt-get source linux-image-$KERNEL_VERSION
 
 # VERSION=1.7.l.4.10.0-00014
 # wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
