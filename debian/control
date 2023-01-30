@@ -1,10 +1,10 @@
 Source: intel-qat
 Section: admin
 Priority: optional
-Maintainer: Kjeld Schouten-Lebbing <kjeld@schouten-lebbing.nl>
-Build-Depends: debhelper-compat (= 12), make, g++, wget, pciutils, pkg-config, libudev-dev, linux-image-amd64, linux-headers-amd64,
+Maintainer: Yanfei Guo <yanf.guo@gmail.com>
+Build-Depends: debhelper-compat (= 12), make, g++, wget, pciutils, pkg-config, libudev-dev, yasm, linux-image-amd64, linux-headers-amd64, linux-source
 Standards-Version: 4.4.0
-Homepage: https://github.com/Ornias1993/intel-qat
+Homepage: https://github.com/arakashic/intel-qat
 
 Package: intel-qat
 Architecture: amd64
