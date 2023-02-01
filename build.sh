@@ -34,3 +34,4 @@ chown -R root:root  intel-qat
 cd intel-qat
 ./configure --enable-kapi
 make
+make install
