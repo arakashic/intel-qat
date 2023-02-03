@@ -29,7 +29,11 @@ apt -qyy install \
 
 # VERSION=1.7.l.4.10.0-00014
 # wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
-tar xvf QAT.L.4.20.0-00001.tar.gz
+mkdir -p /intel-qat
+tar xvf QAT.L.4.20.0-00001.tar.gz -c /intel-qat
+chown -R root:root /intel-qat
+cd /intel-qat
 ./configure --enable-kapi
 make
 make install
+cd -
