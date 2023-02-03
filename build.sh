@@ -12,7 +12,8 @@ apt info linux-headers-truenas-amd64
 # export KVERS=$(apt info linux-headers-truenas-amd64 | awk '/Source:/ { print $2}' | sed 's/linux-//')
 # export KSRC="/usr/src/linux-headers-${KVERS}"
 # export KERNEL_SOURCE_ROOT=${KSRC}
-export KERNEL_SOURCE_ROOT=/lib/modules/5.10.0-18-amd64/build
+# export KERNEL_SOURCE_ROOT=/lib/modules/5.10.0-18-amd64/build
+export KERNEL_SOURCE_ROOT=/lib/modules/5.15.79+truenas/build
 ls /usr/src/
 ls /lib/modules/
 # endif
