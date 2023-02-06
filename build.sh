@@ -24,7 +24,6 @@ apt -qyy install \
 	yasm \
 	wget \
 	pkg-config \
-	libboost-all-dev \
 	libudev-dev
 
 # VERSION=1.7.l.4.10.0-00014
