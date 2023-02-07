@@ -32,7 +32,7 @@ mkdir -p /intel-qat
 tar xvf QAT.L.4.20.0-00001.tar.gz -C /intel-qat
 chown -R root:root /intel-qat
 cd /intel-qat
-./configure --enable-kapi
+./configure --enable-kapi --enable-icp-sriov=host
 make
 make install
 cd -
