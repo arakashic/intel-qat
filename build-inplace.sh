@@ -25,8 +25,8 @@ apt -qyy install \
 	wget \
 	pkg-config \
 	libudev-dev \
-	libnl-3.0 \
-	libnl-genl-3.0
+	libnl-3-200 \
+	libnl-genl-3-200
 
 # VERSION=1.7.l.4.10.0-00014
 # wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
