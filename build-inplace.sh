@@ -24,7 +24,9 @@ apt -qyy install \
 	yasm \
 	wget \
 	pkg-config \
-	libudev-dev
+	libudev-dev \
+	libnl-3.0 \
+	libnl-genl-3.0
 
 # VERSION=1.7.l.4.10.0-00014
 # wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
