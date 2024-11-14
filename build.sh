@@ -34,7 +34,6 @@ mkdir intel-qat
 tar xvf ./QAT.L.4.26.0-00008.tar.gz -C intel-qat
 chown -R root:root  intel-qat
 cd intel-qat
-export KERNEL_SOURCE_ROOT=/lib/modules/6.6.44-production+truenas/build
 ./configure --enable-kapi --enable-icp-sriov=host
 make
 make install
