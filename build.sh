@@ -1,6 +1,6 @@
 #!/bin/sh -ex
 
-export KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $$2 }' | sed 's/linux-//')
+export KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $2 }' | sed 's/linux-//')
 export KSRC="/lib/modules/${KVERS}/build"
 export KERNEL_SOURCE_ROOT=${KSRC}
 env
