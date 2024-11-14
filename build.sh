@@ -1,33 +1,11 @@
 #!/bin/sh -ex
 
-# Download kernel and headers
-# ifndef KVERS
-# KVERS=$(shell uname -r)
-# endif
-
-# ifndef KSRC
-# export KERNEL_SOURCE_ROOT=/lib/modules/${KVERS}/build
-# else
-# apt info linux-headers-truenas-amd64
-export KVERS=$(apt info linux-headers-truenas-amd64 | awk '/Source:/ { print $$2 }' | sed 's/linux-//')
-export KSRC="/usr/src/linux-headers-${KVERS}"
+export KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $$2 }' | sed 's/linux-//')
+export KSRC="/lib/modules/${KVERS}/build"
 export KERNEL_SOURCE_ROOT=${KSRC}
 env
-# export KERNEL_SOURCE_ROOT=/lib/modules/5.10.0-18-amd64/build
-# export KERNEL_SOURCE_ROOT=/lib/modules/5.15.79+truenas/build
-# ls /usr/src/
-# ls /lib/modules/
-# endif
 
-
-# apt -qyy install \
-# 	pciutils \
-# 	yasm \
-# 	wget \
-# 	pkg-config \
-# 	libudev-dev \
-# 	libnl-3-200 \
-# 	libnl-genl-3-200
+# apt -qyy install wget
 
 # VERSION=1.7.l.4.10.0-00014
 # wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
