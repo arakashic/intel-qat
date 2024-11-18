@@ -11,8 +11,7 @@ env
 # wget https://01.org/sites/default/files/downloads/qat$VERSION.tar.gz -O qat$VERSION.tar.gz
 mkdir intel-qat
 tar xvf ./QAT.L.4.26.0-00008.tar.gz -C intel-qat
-chown -R root:root  intel-qat
+chown -R root:root intel-qat
 cd intel-qat
 ./configure --enable-kapi --enable-icp-sriov=host
-make
 make install
