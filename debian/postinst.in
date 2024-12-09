@@ -1,0 +1,97 @@
+#!/bin/sh
+
+set -e
+
+# Automatically added by dh_installmodules/13.11.4
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+        if [ -e /boot/System.map-6.12.15-production+truenas ]; then
+                depmod -a -F /boot/System.map-6.12.15-production+truenas 6.12.15-production+truenas || true
+        fi
+fi
+# End automatically added section
+
+case "$1" in
+    configure)
+        # Install firmware
+        mkdir -p /lib/firmware/qat_fw_backup
+        # mv /lib/firmware/qat*.bin /lib/firmware/qat_fw_backup/
+        cp /usr/share/qat/firmware/qat*.bin /lib/firmware/
+        # Update module dependencies
+        depmod -a @KVERS@
+        # Update initramfs
+        update-initramfs -u
+        # Update library cache
+        echo "/usr/lib" > /etc/ld.so.conf.d/qat.conf
+        ldconfig
+        # Update configuration
+        echo "blacklist qat_dh895xccvf" > /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_c3xxxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_200xxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_c62xvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_d15xxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_c4xxxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        # Update service
+        # systemctl reload-daemon
+        # create QAT user group
+        if [ ! $(getent group qat) ]; then
+            echo "Creating qat group."
+            groupadd qat
+        else
+            echo "Group qat already exists."
+        fi
+        #
+        echo "Creating udev rules"
+        echo 'KERNEL=="qat_adf_ctl" MODE="0660" GROUP="qat" RUN+="/bin/chgrp qat $(bindir)/$(ADF_CTL_BIN)"' > /etc/udev/rules.d/00-qat.rules;
+        echo 'KERNEL=="qat_dev_processes" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'KERNEL=="usdm_drv" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/mkdir $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/chgrp qat $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/chmod 0770 $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="remove", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/rmdir $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x0435" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x0443" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x37c8" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x37c9" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x6f54" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x6f55" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x19e2" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x19e3" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18ee" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18ef" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18a0" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18a1" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        ;;
+esac
+
+# Automatically added by dh_installsystemd/13.11.4
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+        # The following line should be removed in trixie or trixie+1
+        deb-systemd-helper unmask 'qat.service' >/dev/null || true
+
+        # was-enabled defaults to true, so new installations run enable.
+        if deb-systemd-helper --quiet was-enabled 'qat.service'; then
+                # Enables the unit on first installation, creates new
+                # symlinks on upgrades if the unit file has changed.
+                deb-systemd-helper enable 'qat.service' >/dev/null || true
+        else
+                # Update the statefile to add new symlinks (if any), which need to be
+                # cleaned up on purge. Also remove old symlinks.
+                deb-systemd-helper update-state 'qat.service' >/dev/null || true
+        fi
+fi
+# End automatically added section
+
+# Automatically added by dh_installsystemd/13.11.4
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+        if [ -d /run/systemd/system ]; then
+                systemctl --system daemon-reload >/dev/null || true
+                if [ -n "$2" ]; then
+                        _dh_action=restart
+                else
+                        _dh_action=start
+                fi
+                deb-systemd-invoke $_dh_action 'qat.service' >/dev/null || true
+        fi
+fi
+
+exit 0
