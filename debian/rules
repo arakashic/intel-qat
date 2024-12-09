@@ -4,14 +4,21 @@
 	dh $@
 
 override_dh_auto_configure:
-	./configure --enable-kapi
+	KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $2 }' | sed 's/linux-//')
+	KERNEL_SOURCE_ROOT=/lib/modules/$(KVERS)/build ./configure --enable-kapi --prefix=/usr
 	# ./configure --enable-kapi --enable-icp-sriov=host
 
 override_dh_auto_build:
 	make
 
 override_dh_auto_install:
+	# install source 
+	mkdir -p debian/intel-qat/opt/intel-qat
+	find . -maxdepth 1 ! -name "debian*" ! -name ".git*" ! -name "QAT.tar.gz" ! -name "intel-qat*" \
+		-exec cp -r {} debian/intel-qat/opt/intel-qat \;
+
 	# Define the base module directory
+	KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $2 }' | sed 's/linux-//')
 	MOD_DIR=debian/intel-qat/lib/modules/$(KVERS)/drivers
 	MOD_UPDATE_DIR=debian/intel-qat/lib/modules/$(KVERS)/updates/drivers/crypto/qat
 
@@ -111,24 +118,29 @@ override_dh_auto_install:
 	done
 
 	# Install user libraries
-	mkdir -p debian/intel-qat/usr/local/lib
-	cp build/libusdm_drv.so debian/intel-qat/usr/local/lib
-	cp build/libqat_s.so debian/intel-qat/usr/local/lib
+	mkdir -p debian/intel-qat/usr/lib
+	cp build/libusdm_drv_s.so debian/intel-qat/usr/lib
+	cp build/libqat_s.so debian/intel-qat/usr/lib
 
 	# Install adf_ctl binary
-	mkdir -p debian/intel-qat/usr/local/bin
-	cp build/adf_ctl debian/intel-qat/usr/local/bin
+	mkdir -p debian/intel-qat/usr/bin
+	cp build/adf_ctl debian/intel-qat/usr/bin/adf_ctl
 
 	# Install configurations
-	mkdir -p debian/intel-qat/etc/default/qat
+	mkdir -p debian/intel-qat/etc/default
 	echo "ENABLE_KAPI=1" > debian/intel-qat/etc/default/qat
 	# echo "ENABLE_SRIOV=1" >> debian/intel-qat/etc/default/qat
-	mkdir -p debian/intel-qat/usr/local/share/qat/conf
-	cp quickassist/utilities/adf_ctl/conf_files/* debian/intel-qat/usr/local/share/qat/conf/
+	mkdir -p debian/intel-qat/usr/share/qat/conf
+	cp quickassist/utilities/adf_ctl/conf_files/* debian/intel-qat/usr/share/qat/conf/
 
 	# Install QAT service
 	mkdir -p debian/intel-qat/etc/init.d
 	cp build/qat_service debian/intel-qat/etc/init.d/qat_service
 	cp build/qat_service_vfs debian/intel-qat/etc/init.d/qat_service_vfs
 	mkdir -p debian/intel-qat/lib/systemd/system/
-	cp build/qat.service debian/intel-qat/lib/systemd/system/qat.service
+	cp quickassist/build_system/build_files/qat.service debian/intel-qat/lib/systemd/system/qat.service
+
+	dh_install
+
+override_dh_strip:
+	dh_strip --exclude=debian/intel-qat/opt/intel-qat/quickassist/utilities/libusdm_drv/linux/build/linux_2.6/kernel_space/libusdm_drv.a
