@@ -1,5 +1,0 @@
-intel-qat (1.7.L.4.20.0-00001) unstable; urgency=medium
-
-  * Initial commit for intel-qat package building
-
- -- Yanfei Guo <yanf.guo@gmail.com>  Sun, 29 Jan 2023 10:51:17 -0600

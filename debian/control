@@ -2,8 +2,8 @@ Source: intel-qat
 Section: admin
 Priority: optional
 Maintainer: Yanfei Guo <yanf.guo@gmail.com>
-Build-Depends: debhelper-compat (= 12), make, g++, wget, pciutils, pkg-config, libnl-3-dev, libnl-genl-3-dev, libudev-dev, nasm, linux-image-truenas-production-amd64, linux-headers-truenas-production-amd64, linux-source
-Standards-Version: 4.4.0
+Build-Depends: debhelper-compat (= 12), make, g++, pciutils, pkg-config, libnl-3-dev, libnl-genl-3-dev, libudev-dev, nasm, linux-image-truenas-production-amd64, linux-headers-truenas-production-amd64, linux-source
+Standards-Version: 4.26.0
 Homepage: https://github.com/arakashic/intel-qat
 
 Package: intel-qat
