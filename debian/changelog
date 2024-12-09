@@ -1,3 +1,9 @@
+intel-qat (1.X.L.4.27.0-00006) unstable; urgency=medium
+
+  * Latest version
+
+ -- Yanfei Guo <yanf.guo@gmail.com>  Sun, 08 Dec 2024 11:50:50 -0600
+
 intel-qat (1.7.L.4.20.0-00001) unstable; urgency=medium
 
   * Initial commit for intel-qat package building

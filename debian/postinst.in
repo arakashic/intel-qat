@@ -1,0 +1,95 @@
+#!/bin/sh
+
+set -e
+
+QAT_DH895XCC_NUM_VFS=32
+QAT_DHC62X_NUM_VFS=16
+QAT_DHD15XX_NUM_VFS=16
+QAT_DHC3XXX_NUM_VFS=16
+QAT_DH200XX_NUM_VFS=16
+QAT_DHC4XXX_NUM_VFS=128
+
+INTEL_VENDORID="8086"
+DH895_DEVICE_NUMBER="0435"
+DH895_DEVICE_NUMBER_VM="0443"
+C62X_DEVICE_NUMBER="37c8"
+C62X_DEVICE_NUMBER_VM="37c9"
+D15XX_DEVICE_NUMBER="6f54"
+D15XX_DEVICE_NUMBER_VM="6f55"
+C3XXX_DEVICE_NUMBER="19e2"
+C3XXX_DEVICE_NUMBER_VM="19e3"
+200XX_DEVICE_NUMBER="18ee"
+200XX_DEVICE_NUMBER_VM="18ef"
+C4XXX_DEVICE_NUMBER="18a0"
+C4XXX_DEVICE_NUMBER_VM="18a1"
+DEVICES=${DH895_DEVICE_NUMBER} ${DH895_DEVICE_NUMBER_VM} \
+    ${C62X_DEVICE_NUMBER} ${C62X_DEVICE_NUMBER_VM} \
+    ${D15XX_DEVICE_NUMBER} ${D15XX_DEVICE_NUMBER_VM} \
+    ${C3XXX_DEVICE_NUMBER} ${C3XXX_DEVICE_NUMBER_VM} \
+    ${200XX_DEVICE_NUMBER} ${200XX_DEVICE_NUMBER_VM} \
+    ${C4XXX_DEVICE_NUMBER} ${C4XXX_DEVICE_NUMBER_VM}
+
+numC62xDevice=$(lspci -vnd 8086: | grep -c "37c8\|37c9")
+numD15xxDevice=$(lspci -vnd 8086: | grep -c "6f54\|6f55")
+numDh895xDevice=$(lspci -vnd 8086: | grep -c "0435\|0443")
+numC3xxxDevice=$(lspci -vnd 8086: | grep -c "19e2\|19e3")
+num200xxDevice=$(lspci -vnd 8086: | grep -c "18ee\|18ef")
+numC4xxxDevice=$(lspci -vnd 8086: | grep -c "18a0\|18a1")
+numDh895xDevicesP=$(lspci -n | grep -c "${INTEL_VENDORID}:${DH895_DEVICE_NUMBER}")
+numDh895xDevicesV=$(lspci -n | grep -c "${INTEL_VENDORID}:${DH895_DEVICE_NUMBER_VM}")
+numC62xDevicesP=$(lspci -n | grep -c "${INTEL_VENDORID}:${C62X_DEVICE_NUMBER}")
+numC62xDevicesV=$(lspci -n | grep -c "${INTEL_VENDORID}:${C62X_DEVICE_NUMBER_VM}")
+numD15xxDevicesP=$(lspci -n | grep -c "${INTEL_VENDORID}:${D15XX_DEVICE_NUMBER}")
+numD15xxDevicesV=$(lspci -n | grep -c "${INTEL_VENDORID}:${D15XX_DEVICE_NUMBER_VM}")
+numC3xxxDevicesP=$(lspci -n | grep -c "${INTEL_VENDORID}:${C3XXX_DEVICE_NUMBER}")
+numC3xxxDevicesV=$(lspci -n | grep -c "${INTEL_VENDORID}:${C3XXX_DEVICE_NUMBER_VM}")
+num200xxDevicesP=$(lspci -n | grep -c "${INTEL_VENDORID}:${200XX_DEVICE_NUMBER}")
+num200xxDevicesV=$(lspci -n | grep -c "${INTEL_VENDORID}:${200XX_DEVICE_NUMBER_VM}")
+numC4xxxDevicesP=$(lspci -n | grep -c "${INTEL_VENDORID}:${C4XXX_DEVICE_NUMBER}")
+numC4xxxDevicesV=$(lspci -n | grep -c "${INTEL_VENDORID}:${C4XXX_DEVICE_NUMBER_VM}")
+isLegacyLoaded=$(lsmod | grep -c "icp_qa_al")
+
+case "$1" in
+    configure)
+        # Install firmware
+        mkdir -p /lib/firmware/qat_fw_backup
+        mv /lib/firmware/qat*.bin /lib/firmware/qat_fw_backup/
+        cp /usr/share/qat/firmware/qat*.bin /lib/firmware/
+        # Update module dependencies
+        depmod -a @KVERS@
+        # Update initramfs
+        update-initramfs -u
+        # Update library cache
+        echo "/usr/lib" > /etc/ld.so.conf.d/qat.conf
+        ldconfig
+        # Update configuration
+        echo "blacklist qat_dh895xccvf" > /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_c3xxxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_200xxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_c62xvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_d15xxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        echo "blacklist qat_c4xxxvf" >> /etc/modprobe.d/blacklist-qat-vfs.conf
+        # Update service
+        # systemctl reload-daemon
+        # create QAT user group
+        if [ ! $(getent group qat) ]; then
+            echo "Creating qat group."
+            groupadd qat
+        else
+            echo "Group qat already exists."
+        fi
+        #
+        echo "Creating udev rules"
+        echo 'KERNEL=="qat_adf_ctl" MODE="0660" GROUP="qat" RUN+="/bin/chgrp qat $(bindir)/$(ADF_CTL_BIN)"' > /etc/udev/rules.d/00-qat.rules;
+        echo 'KERNEL=="qat_dev_processes" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'KERNEL=="usdm_drv" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/mkdir $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/chgrp qat $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/chmod 0770 $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        echo 'ACTION=="remove", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/rmdir $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
+        $(foreach dev, ${DEVICES}, echo 'KERNEL=="uio*", ATTRS{vendor}=="0x'`echo ${INTEL_VENDORID} | tr -d \"`'", ATTRS{device}=="0x'`echo ${dev} | tr -d \"`'"  MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules; )
+        ;;
+    esac
+
+    exit 0
+

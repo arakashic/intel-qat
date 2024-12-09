@@ -1,16 +1,157 @@
 #!/usr/bin/make -f
-export DH_VERBOSE = 1
+
+ifndef KVERS
+KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $2 }' | sed 's/linux-//')
+endif
+
+MOD_DIR=debian/intel-qat/lib/modules/$(KVERS)/drivers
+MOD_UPDATE_DIR=debian/intel-qat/lib/modules/$(KVERS)/updates/drivers/crypto/qat
+
+NUM_CPUS = $(shell nproc 2>/dev/null)
+NJOBS    = -j$(or $(NUM_CPUS),1)
 
 %:
 	dh $@
 
+override_dh_auto_configure:
+	KERNEL_SOURCE_ROOT=/lib/modules/$(KVERS)/build ./configure --prefix=/usr --enable-kapi --enable-icp-sriov=host
+
 override_dh_auto_build:
-	./build.sh
+	$(MAKE) $(NJOBS)
 
-override_dh_strip: 
-    
+override_dh_auto_install:
+	# install source 
+	mkdir -p debian/intel-qat/opt/intel-qat
+	find . -maxdepth 1 ! -name "debian*" ! -name ".git*" ! -name "QAT.tar.gz" ! -name "intel-qat*" \
+		-exec cp -r {} debian/intel-qat/opt/intel-qat/ \;
+	rm -rf debian/intel-qat/opt/intel-qat/*.tar.gz
+	rm -rf debian/intel-qat/opt/intel-qat/intel*
+	rm -rf debian/intel-qat/opt/intel-qat/debian
 
-override_dh_install:
-	dh_install
-	mkdir -p debian/intel-qat
-	cp -Rf intel-qat debian/intel-qat
+	# Create the directory structure in the package
+	mkdir -p $(MOD_DIR)
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c4xxx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_200xx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_d15xx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_common
+	mkdir -p $(MOD_UPDATE_DIR)/qat_4xxxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_200xxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_420xxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_4xxx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c62x
+	mkdir -p $(MOD_UPDATE_DIR)/qat_d15xxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c3xxxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c3xxx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c4xxxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_420xx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c62xvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_dh895xcc
+	mkdir -p $(MOD_UPDATE_DIR)/qat_dh895xccvf
+
+	# Verify .ko files exist and copy them
+	test -f quickassist/qat/drivers/crypto/qat/qat_c4xxx/qat_c4xxx.ko || (echo "qat_c4xxx.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_c4xxx/qat_c4xxx.ko $(MOD_UPDATE_DIR)/qat_c4xxx/qat_c4xxx.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_200xx/qat_200xx.ko || (echo "qat_200xx.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_200xx/qat_200xx.ko $(MOD_UPDATE_DIR)/qat_200xx/qat_200xx.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_d15xx/qat_d15xx.ko || (echo "qat_d15xx.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_d15xx/qat_d15xx.ko $(MOD_UPDATE_DIR)/qat_d15xx/qat_d15xx.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_common/intel_qat.ko || (echo "intel_qat.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_common/intel_qat.ko $(MOD_UPDATE_DIR)/qat_common/intel_qat.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_4xxxvf/qat_4xxxvf.ko || (echo "qat_4xxxvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_4xxxvf/qat_4xxxvf.ko $(MOD_UPDATE_DIR)/qat_4xxxvf/qat_4xxxvf.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_200xxvf/qat_200xxvf.ko || (echo "qat_200xxvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_200xxvf/qat_200xxvf.ko $(MOD_UPDATE_DIR)/qat_200xxvf/qat_200xxvf.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_420xxvf/qat_420xxvf.ko || (echo "qat_420xxvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_420xxvf/qat_420xxvf.ko $(MOD_UPDATE_DIR)/qat_420xxvf/qat_420xxvf.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_4xxx/qat_4xxx.ko || (echo "qat_4xxx.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_4xxx/qat_4xxx.ko $(MOD_UPDATE_DIR)/qat_4xxx/qat_4xxx.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_c62x/qat_c62x.ko || (echo "qat_c62x.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_c62x/qat_c62x.ko $(MOD_UPDATE_DIR)/qat_c62x/qat_c62x.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_d15xxvf/qat_d15xxvf.ko || (echo "qat_d15xxvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_d15xxvf/qat_d15xxvf.ko $(MOD_UPDATE_DIR)/qat_d15xxvf/qat_d15xxvf.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_c3xxxvf/qat_c3xxxvf.ko || (echo "qat_c3xxxvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_c3xxxvf/qat_c3xxxvf.ko $(MOD_UPDATE_DIR)/qat_c3xxxvf/qat_c3xxxvf.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_c3xxx/qat_c3xxx.ko || (echo "qat_c3xxx.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_c3xxx/qat_c3xxx.ko $(MOD_UPDATE_DIR)/qat_c3xxx/qat_c3xxx.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_c4xxxvf/qat_c4xxxvf.ko || (echo "qat_c4xxxvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_c4xxxvf/qat_c4xxxvf.ko $(MOD_UPDATE_DIR)/qat_c4xxxvf/qat_c4xxxvf.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_420xx/qat_420xx.ko || (echo "qat_420xx.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_420xx/qat_420xx.ko $(MOD_UPDATE_DIR)/qat_420xx/qat_420xx.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_c62xvf/qat_c62xvf.ko || (echo "qat_c62xvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_c62xvf/qat_c62xvf.ko $(MOD_UPDATE_DIR)/qat_c62xvf/qat_c62xvf.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_dh895xcc/qat_dh895xcc.ko || (echo "qat_dh895xcc.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_dh895xcc/qat_dh895xcc.ko $(MOD_UPDATE_DIR)/qat_dh895xcc/qat_dh895xcc.ko
+
+	test -f quickassist/qat/drivers/crypto/qat/qat_dh895xccvf/qat_dh895xccvf.ko || (echo "qat_dh895xccvf.ko not found!" && exit 1)
+	cp quickassist/qat/drivers/crypto/qat/qat_dh895xccvf/qat_dh895xccvf.ko $(MOD_UPDATE_DIR)/qat_dh895xccvf/qat_dh895xccvf.ko
+
+	test -f ./quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko || (echo "qat_api.ko not found!" && exit 1)
+	cp quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko $(MOD_DIR)/qat_api.ko
+
+	test -f ./quickassist/utilities/libusdm_drv/usdm_drv.ko || (echo "usdm_drv.ko not found!" && exit 1)
+	cp quickassist/utilities/libusdm_drv/usdm_drv.ko $(MOD_DIR)/usdm_drv.ko
+
+	# Install firmware
+	mkdir -p debian/intel-qat/usr/share/qat/firmware
+	cp quickassist/qat/fw/qat_c3xxx.bin debian/intel-qat/usr/share/qat/firmware/qat_c3xxx.bin
+	cp quickassist/qat/fw/qat_c3xxx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_c3xxx_mmp.bin
+	cp quickassist/qat/fw/qat_c62x.bin debian/intel-qat/usr/share/qat/firmware/qat_c62x.bin
+	cp quickassist/qat/fw/qat_c62x_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_c62x_mmp.bin
+	cp quickassist/qat/fw/qat_d15xx.bin debian/intel-qat/usr/share/qat/firmware/qat_d15xx.bin
+	cp quickassist/qat/fw/qat_d15xx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_d15xx_mmp.bin
+	cp quickassist/qat/fw/qat_200xx.bin debian/intel-qat/usr/share/qat/firmware/qat_200xx.bin
+	cp quickassist/qat/fw/qat_200xx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_200xx_mmp.bin
+	cp quickassist/qat/fw/qat_c4xxx.bin debian/intel-qat/usr/share/qat/firmware/qat_c4xxx.bin
+	cp quickassist/qat/fw/qat_c4xxx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_c4xxx_mmp.bin
+	cp quickassist/qat/fw/qat_895xcc.bin debian/intel-qat/usr/share/qat/firmware/qat_895xcc.bin
+	cp quickassist/qat/fw/qat_895xcc_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_895xcc_mmp.bin
+
+	# Install user libraries
+	mkdir -p debian/intel-qat/usr/lib
+	cp build/libusdm_drv_s.so debian/intel-qat/usr/lib
+	cp build/libqat_s.so debian/intel-qat/usr/lib
+
+	# Install adf_ctl binary
+	mkdir -p debian/intel-qat/usr/bin
+	cp build/adf_ctl debian/intel-qat/usr/bin/adf_ctl
+
+	# Install configurations
+	mkdir -p debian/intel-qat/etc/default
+	echo "ENABLE_KAPI=1" > debian/intel-qat/etc/default/qat
+	echo "ENABLE_SRIOV=1" >> debian/intel-qat/etc/default/qat
+	mkdir -p debian/intel-qat/usr/share/qat/conf
+	cp quickassist/utilities/adf_ctl/conf_files/* debian/intel-qat/usr/share/qat/conf/
+
+	# Install QAT service
+	mkdir -p debian/intel-qat/etc/init.d
+	cp build/qat_service debian/intel-qat/etc/init.d/qat_service
+	sed -i "s|/usr/sbin/adf_ctl|/usr/bin/adf_ctl|g" debian/intel-qat/etc/init.d/qat_service
+	cp build/qat_service_vfs debian/intel-qat/etc/init.d/qat_service_vfs
+	sed -i "s|/usr/sbin/adf_ctl|/usr/bin/adf_ctl|g" debian/intel-qat/etc/init.d/qat_service_vfs
+	mkdir -p debian/intel-qat/lib/systemd/system/
+	cp quickassist/build_system/build_files/qat.service debian/intel-qat/lib/systemd/system/qat.service
+
+override_dh_strip:
+	dh_strip --exclude=debian/intel-qat/opt/intel-qat/quickassist/utilities/libusdm_drv/linux/build/linux_2.6/kernel_space/libusdm_drv.a
+
+override_dh_prep-deb-files:
+	sed -e 's/@KVERS@/$(KVERS)/g' debian/postinst.in > debian/postinst
+
+override_dh_auto_test:
+	echo "Skip dh_auto_test"
+

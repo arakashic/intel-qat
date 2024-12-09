@@ -1,12 +1,28 @@
 Source: intel-qat
-Section: admin
+Section: kernel
 Priority: optional
 Maintainer: Yanfei Guo <yanf.guo@gmail.com>
-Build-Depends: debhelper-compat (= 12), make, g++, wget, pciutils, pkg-config, libnl-3-dev, libnl-genl-3-dev, libudev-dev, nasm, linux-image-truenas-production-amd64, linux-headers-truenas-production-amd64, linux-source
-Standards-Version: 4.4.0
+Build-Depends: debhelper-compat (= 12),
+               make,
+               g++,
+               pciutils,
+               pkg-config,
+               libnl-3-dev,
+               libnl-genl-3-dev,
+               libudev-dev,
+               zlib1g-dev,
+               nasm,
+               linux-image-truenas-production-amd64,
+               linux-headers-truenas-production-amd64
+Standards-Version: 4.5.1
 Homepage: https://github.com/arakashic/intel-qat
 
 Package: intel-qat
+Depends: udev,
+         libnl-3-200,
+         libnl-genl-3-200,
+         ${misc:Depends},
+         ${shlibs:Depends}
 Architecture: amd64
 Description: Quick Assist Technology (QAT)
  Intel® QuickAssist Technology (Intel® QAT) improves performance across applications and platforms
