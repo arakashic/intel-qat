@@ -1,3 +1,0 @@
-#!/bin/sh -ex
-
-tar xvf ./QAT.L.4.27.0-00006.tar.gz -C .
