@@ -7,6 +7,9 @@ endif
 MOD_DIR=debian/tmp/lib/modules/$(KVERS)/drivers
 MOD_UPDATE_DIR=debian/tmp/lib/modules/$(KVERS)/updates/drivers/crypto/qat
 
+NUM_CPUS = $(shell nproc 2>/dev/null)
+NJOBS    = -j$(or $(NUM_CPUS),1)
+
 %:
 	dh $@
 
@@ -16,7 +19,7 @@ override_dh_auto_configure:
 	# ./configure --enable-kapi --enable-icp-sriov=host
 
 override_dh_auto_build:
-	make
+	$(MAKE) $(NJOBS)
 
 override_dh_auto_install:
 	# install source 
