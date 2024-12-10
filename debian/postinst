@@ -5,11 +5,11 @@ set -e
 case "$1" in
   configure)
     # Update module dependencies
-    depmod -a
+    depmod -a 6.6.44-production+truenas
     # Update initramfs
     update-initramfs -u
     # Update library cache 
-    echo "/usr/loca/bin" > /etc/ld.so.conf.d/qat.conf
+    echo "/usr/lib" > /etc/ld.so.conf.d/qat.conf
     ldconfig
     # Update configuration
     echo "# blacklist qat_dh895xccvf" > /etc/modprobe.d/blacklist-qat-vfs.conf
