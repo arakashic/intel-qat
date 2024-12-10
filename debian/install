@@ -8,8 +8,8 @@
 /lib/firmware/qat_200xx_mmp.bin
 /lib/firmware/qat_c4xxx.bin
 /lib/firmware/qat_c4xxx_mmp.bin
-/lib/firmware/qat_dh895xcc.bin
-/lib/firmware/qat_dh895xcc_mmp.bin
+/lib/firmware/qat_895xcc.bin
+/lib/firmware/qat_895xcc_mmp.bin
 /usr/lib/libusdm_drv_s.so
 /usr/lib/libqat_s.so
 /usr/bin/adf_ctl

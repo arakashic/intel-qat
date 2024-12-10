@@ -13,14 +13,14 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	# install source 
-	mkdir -p debian/intel-qat/opt/intel-qat
+	mkdir -p debian/tmp/opt/intel-qat
 	find . -maxdepth 1 ! -name "debian*" ! -name ".git*" ! -name "QAT.tar.gz" ! -name "intel-qat*" \
-		-exec cp -r {} debian/intel-qat/opt/intel-qat \;
+		-exec cp -r {} debian/tmp/opt/intel-qat \;
 
 	# Define the base module directory
 	KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $2 }' | sed 's/linux-//')
-	MOD_DIR=debian/intel-qat/lib/modules/$(KVERS)/drivers
-	MOD_UPDATE_DIR=debian/intel-qat/lib/modules/$(KVERS)/updates/drivers/crypto/qat
+	MOD_DIR=debian/tmp/lib/modules/$(KVERS)/drivers
+	MOD_UPDATE_DIR=debian/tmp/lib/modules/$(KVERS)/updates/drivers/crypto/qat
 
 	# Create the directory structure in the package
 	mkdir -p $(MOD_UPDATE_DIR)/qat_c4xxx
@@ -94,53 +94,50 @@ override_dh_auto_install:
 	cp quickassist/qat/drivers/crypto/qat/qat_dh895xccvf/qat_dh895xccvf.ko $(MOD_UPDATE_DIR)/qat_dh895xccvf/qat_dh895xccvf.ko
 
 	test -f ./quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko || (echo "qat_api.ko not found!" && exit 1)
-	cp ./quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko $(MOD_DIR)/qat_api.ko
+	cp quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko $(MOD_DIR)/qat_api.ko
 
 	test -f ./quickassist/utilities/libusdm_drv/usdm_drv.ko || (echo "usdm_drv.ko not found!" && exit 1)
-	cp ./quickassist/utilities/libusdm_drv/usdm_drv.ko $(MOD_DIR)/usdm_drv.ko
+	cp quickassist/utilities/libusdm_drv/usdm_drv.ko $(MOD_DIR)/usdm_drv.ko
 
 	# Install firmware
-	BIN_LIST="qat_c3xxx.bin qat_c3xxx_mmp.bin qat_c62x.bin \
-		qat_c62x_mmp.bin qat_d15xx.bin qat_d15xx_mmp.bin qat_200xx.bin \
-		qat_200xx_mmp.bin qat_c4xxx.bin qat_c4xxx_mmp.bin \
-		qat_dh895xcc.bin qat_dh895xcc_mmp.bin"
-
-	# Create backup directory if not exists
-	mkdir -p debian/intel-qat/lib/firmware/qat_fw_backup
-
-	for FILE in $(BIN_LIST); do \
-		if [ -f /lib/firmware/$$FILE ]; then \
-			echo "Backing up existing firmware: $$FILE"; \
-			mv /lib/firmware/$$FILE debian/intel-qat/lib/firmware/qat_fw_backup/; \
-		fi; \
-		echo "Installing new firmware: $$FILE"; \
-		cp quickassist/qat/fw/$$FILE debian/intel-qat/lib/firmware/; \
-	done
+	mkdir -p debian/tmp/lib/firmware
+	cp quickassist/qat/fw/qat_c3xxx.bin debian/tmp/lib/firmware/qat_c3xxx.bin
+	cp quickassist/qat/fw/qat_c3xxx_mmp.bin debian/tmp/lib/firmware/qat_c3xxx_mmp.bin
+	cp quickassist/qat/fw/qat_c62x.bin debian/tmp/lib/firmware/qat_c62x.bin
+	cp quickassist/qat/fw/qat_c62x_mmp.bin debian/tmp/lib/firmware/qat_c62x_mmp.bin
+	cp quickassist/qat/fw/qat_d15xx.bin debian/tmp/lib/firmware/qat_d15xx.bin
+	cp quickassist/qat/fw/qat_d15xx_mmp.bin debian/tmp/lib/firmware/qat_d15xx_mmp.bin
+	cp quickassist/qat/fw/qat_200xx.bin debian/tmp/lib/firmware/qat_200xx.bin
+	cp quickassist/qat/fw/qat_200xx_mmp.bin debian/tmp/lib/firmware/qat_200xx_mmp.bin
+	cp quickassist/qat/fw/qat_c4xxx.bin debian/tmp/lib/firmware/qat_c4xxx.bin
+	cp quickassist/qat/fw/qat_c4xxx_mmp.bin debian/tmp/lib/firmware/qat_c4xxx_mmp.bin
+	cp quickassist/qat/fw/qat_895xcc.bin debian/tmp/lib/firmware/qat_895xcc.bin
+	cp quickassist/qat/fw/qat_895xcc_mmp.bin debian/tmp/lib/firmware/qat_895xcc_mmp.bin
 
 	# Install user libraries
-	mkdir -p debian/intel-qat/usr/lib
-	cp build/libusdm_drv_s.so debian/intel-qat/usr/lib
-	cp build/libqat_s.so debian/intel-qat/usr/lib
+	mkdir -p debian/tmp/usr/lib
+	cp build/libusdm_drv_s.so debian/tmp/usr/lib
+	cp build/libqat_s.so debian/tmp/usr/lib
 
 	# Install adf_ctl binary
-	mkdir -p debian/intel-qat/usr/bin
-	cp build/adf_ctl debian/intel-qat/usr/bin/adf_ctl
+	mkdir -p debian/tmp/usr/bin
+	cp build/adf_ctl debian/tmp/usr/bin/adf_ctl
 
 	# Install configurations
-	mkdir -p debian/intel-qat/etc/default
-	echo "ENABLE_KAPI=1" > debian/intel-qat/etc/default/qat
-	# echo "ENABLE_SRIOV=1" >> debian/intel-qat/etc/default/qat
-	mkdir -p debian/intel-qat/usr/share/qat/conf
-	cp quickassist/utilities/adf_ctl/conf_files/* debian/intel-qat/usr/share/qat/conf/
+	mkdir -p debian/tmp/etc/default
+	echo "ENABLE_KAPI=1" > debian/tmp/etc/default/qat
+	# echo "ENABLE_SRIOV=1" >> debian/tmp/etc/default/qat
+	mkdir -p debian/tmp/usr/share/qat/conf
+	cp quickassist/utilities/adf_ctl/conf_files/* debian/tmp/usr/share/qat/conf/
 
 	# Install QAT service
-	mkdir -p debian/intel-qat/etc/init.d
-	cp build/qat_service debian/intel-qat/etc/init.d/qat_service
-	cp build/qat_service_vfs debian/intel-qat/etc/init.d/qat_service_vfs
-	mkdir -p debian/intel-qat/lib/systemd/system/
-	cp quickassist/build_system/build_files/qat.service debian/intel-qat/lib/systemd/system/qat.service
+	mkdir -p debian/tmp/etc/init.d
+	cp build/qat_service debian/tmp/etc/init.d/qat_service
+	cp build/qat_service_vfs debian/tmp/etc/init.d/qat_service_vfs
+	mkdir -p debian/tmp/lib/systemd/system/
+	cp quickassist/build_system/build_files/qat.service debian/tmp/lib/systemd/system/qat.service
 
 	dh_install
 
 override_dh_strip:
-	dh_strip --exclude=debian/intel-qat/opt/intel-qat/quickassist/utilities/libusdm_drv/linux/build/linux_2.6/kernel_space/libusdm_drv.a
+	dh_strip --exclude=debian/tmp/opt/intel-qat/quickassist/utilities/libusdm_drv/linux/build/linux_2.6/kernel_space/libusdm_drv.a
