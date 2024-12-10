@@ -14,8 +14,7 @@ NJOBS    = -j$(or $(NUM_CPUS),1)
 	dh $@
 
 override_dh_auto_configure:
-	KVERS=$(apt info linux-headers-truenas-production-amd64 | awk '/Source:/ { print $2 }' | sed 's/linux-//')
-	KERNEL_SOURCE_ROOT=/lib/modules/"$(KVERS)"/build ./configure --enable-kapi --prefix=/usr
+	KERNEL_SOURCE_ROOT=/lib/modules/$(KVERS)/build ./configure --enable-kapi --prefix=/usr
 	# ./configure --enable-kapi --enable-icp-sriov=host
 
 override_dh_auto_build:
@@ -31,81 +30,82 @@ override_dh_auto_install:
 	rm -rf debian/tmp/opt/intel-qat/debian
 
 	# Create the directory structure in the package
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_c4xxx
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_200xx
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_d15xx
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_common
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_4xxxvf
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_200xxvf
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_420xxvf
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_4xxx
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_c62x
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_d15xxvf
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_c3xxxvf
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_c3xxx
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_c4xxxvf
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_420xx
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_c62xvf
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_dh895xcc
-	mkdir -p "$(MOD_UPDATE_DIR)"/qat_dh895xccvf
+	mkdir -p $(MOD_DIR)
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c4xxx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_200xx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_d15xx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_common
+	mkdir -p $(MOD_UPDATE_DIR)/qat_4xxxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_200xxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_420xxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_4xxx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c62x
+	mkdir -p $(MOD_UPDATE_DIR)/qat_d15xxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c3xxxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c3xxx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c4xxxvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_420xx
+	mkdir -p $(MOD_UPDATE_DIR)/qat_c62xvf
+	mkdir -p $(MOD_UPDATE_DIR)/qat_dh895xcc
+	mkdir -p $(MOD_UPDATE_DIR)/qat_dh895xccvf
 
 	# Verify .ko files exist and copy them
 	test -f quickassist/qat/drivers/crypto/qat/qat_c4xxx/qat_c4xxx.ko || (echo "qat_c4xxx.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_c4xxx/qat_c4xxx.ko "$(MOD_UPDATE_DIR)"/qat_c4xxx/qat_c4xxx.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_c4xxx/qat_c4xxx.ko $(MOD_UPDATE_DIR)/qat_c4xxx/qat_c4xxx.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_200xx/qat_200xx.ko || (echo "qat_200xx.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_200xx/qat_200xx.ko "$(MOD_UPDATE_DIR)"/qat_200xx/qat_200xx.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_200xx/qat_200xx.ko $(MOD_UPDATE_DIR)/qat_200xx/qat_200xx.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_d15xx/qat_d15xx.ko || (echo "qat_d15xx.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_d15xx/qat_d15xx.ko "$(MOD_UPDATE_DIR)"/qat_d15xx/qat_d15xx.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_d15xx/qat_d15xx.ko $(MOD_UPDATE_DIR)/qat_d15xx/qat_d15xx.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_common/intel_qat.ko || (echo "intel_qat.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_common/intel_qat.ko "$(MOD_UPDATE_DIR)"/qat_common/intel_qat.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_common/intel_qat.ko $(MOD_UPDATE_DIR)/qat_common/intel_qat.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_4xxxvf/qat_4xxxvf.ko || (echo "qat_4xxxvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_4xxxvf/qat_4xxxvf.ko "$(MOD_UPDATE_DIR)"/qat_4xxxvf/qat_4xxxvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_4xxxvf/qat_4xxxvf.ko $(MOD_UPDATE_DIR)/qat_4xxxvf/qat_4xxxvf.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_200xxvf/qat_200xxvf.ko || (echo "qat_200xxvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_200xxvf/qat_200xxvf.ko "$(MOD_UPDATE_DIR)"/qat_200xxvf/qat_200xxvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_200xxvf/qat_200xxvf.ko $(MOD_UPDATE_DIR)/qat_200xxvf/qat_200xxvf.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_420xxvf/qat_420xxvf.ko || (echo "qat_420xxvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_420xxvf/qat_420xxvf.ko "$(MOD_UPDATE_DIR)"/qat_420xxvf/qat_420xxvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_420xxvf/qat_420xxvf.ko $(MOD_UPDATE_DIR)/qat_420xxvf/qat_420xxvf.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_4xxx/qat_4xxx.ko || (echo "qat_4xxx.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_4xxx/qat_4xxx.ko "$(MOD_UPDATE_DIR)"/qat_4xxx/qat_4xxx.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_4xxx/qat_4xxx.ko $(MOD_UPDATE_DIR)/qat_4xxx/qat_4xxx.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_c62x/qat_c62x.ko || (echo "qat_c62x.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_c62x/qat_c62x.ko "$(MOD_UPDATE_DIR)"/qat_c62x/qat_c62x.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_c62x/qat_c62x.ko $(MOD_UPDATE_DIR)/qat_c62x/qat_c62x.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_d15xxvf/qat_d15xxvf.ko || (echo "qat_d15xxvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_d15xxvf/qat_d15xxvf.ko "$(MOD_UPDATE_DIR)"/qat_d15xxvf/qat_d15xxvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_d15xxvf/qat_d15xxvf.ko $(MOD_UPDATE_DIR)/qat_d15xxvf/qat_d15xxvf.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_c3xxxvf/qat_c3xxxvf.ko || (echo "qat_c3xxxvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_c3xxxvf/qat_c3xxxvf.ko "$(MOD_UPDATE_DIR)"/qat_c3xxxvf/qat_c3xxxvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_c3xxxvf/qat_c3xxxvf.ko $(MOD_UPDATE_DIR)/qat_c3xxxvf/qat_c3xxxvf.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_c3xxx/qat_c3xxx.ko || (echo "qat_c3xxx.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_c3xxx/qat_c3xxx.ko "$(MOD_UPDATE_DIR)"/qat_c3xxx/qat_c3xxx.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_c3xxx/qat_c3xxx.ko $(MOD_UPDATE_DIR)/qat_c3xxx/qat_c3xxx.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_c4xxxvf/qat_c4xxxvf.ko || (echo "qat_c4xxxvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_c4xxxvf/qat_c4xxxvf.ko "$(MOD_UPDATE_DIR)"/qat_c4xxxvf/qat_c4xxxvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_c4xxxvf/qat_c4xxxvf.ko $(MOD_UPDATE_DIR)/qat_c4xxxvf/qat_c4xxxvf.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_420xx/qat_420xx.ko || (echo "qat_420xx.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_420xx/qat_420xx.ko "$(MOD_UPDATE_DIR)"/qat_420xx/qat_420xx.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_420xx/qat_420xx.ko $(MOD_UPDATE_DIR)/qat_420xx/qat_420xx.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_c62xvf/qat_c62xvf.ko || (echo "qat_c62xvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_c62xvf/qat_c62xvf.ko "$(MOD_UPDATE_DIR)"/qat_c62xvf/qat_c62xvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_c62xvf/qat_c62xvf.ko $(MOD_UPDATE_DIR)/qat_c62xvf/qat_c62xvf.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_dh895xcc/qat_dh895xcc.ko || (echo "qat_dh895xcc.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_dh895xcc/qat_dh895xcc.ko "$(MOD_UPDATE_DIR)"/qat_dh895xcc/qat_dh895xcc.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_dh895xcc/qat_dh895xcc.ko $(MOD_UPDATE_DIR)/qat_dh895xcc/qat_dh895xcc.ko
 
 	test -f quickassist/qat/drivers/crypto/qat/qat_dh895xccvf/qat_dh895xccvf.ko || (echo "qat_dh895xccvf.ko not found!" && exit 1)
-	cp quickassist/qat/drivers/crypto/qat/qat_dh895xccvf/qat_dh895xccvf.ko "$(MOD_UPDATE_DIR)"/qat_dh895xccvf/qat_dh895xccvf.ko
+	cp quickassist/qat/drivers/crypto/qat/qat_dh895xccvf/qat_dh895xccvf.ko $(MOD_UPDATE_DIR)/qat_dh895xccvf/qat_dh895xccvf.ko
 
 	test -f ./quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko || (echo "qat_api.ko not found!" && exit 1)
-	cp quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko "$(MOD_DIR)"/qat_api.ko
+	cp quickassist/lookaside/access_layer/src/build/linux_2.6/kernel_space/qat_api.ko $(MOD_DIR)/qat_api.ko
 
 	test -f ./quickassist/utilities/libusdm_drv/usdm_drv.ko || (echo "usdm_drv.ko not found!" && exit 1)
-	cp quickassist/utilities/libusdm_drv/usdm_drv.ko "$(MOD_DIR)"/usdm_drv.ko
+	cp quickassist/utilities/libusdm_drv/usdm_drv.ko $(MOD_DIR)/usdm_drv.ko
 
 	# Install firmware
 	mkdir -p debian/tmp/lib/firmware
