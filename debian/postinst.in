@@ -5,7 +5,7 @@ set -e
 case "$1" in
   configure)
     # Update module dependencies
-    depmod -a 6.6.44-production+truenas
+    depmod -a @KVERS@
     # Update initramfs
     update-initramfs -u
     # Update library cache 

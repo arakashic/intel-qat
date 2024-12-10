@@ -146,3 +146,7 @@ override_dh_auto_install:
 
 override_dh_strip:
 	dh_strip --exclude=debian/intel-qat/opt/intel-qat/quickassist/utilities/libusdm_drv/linux/build/linux_2.6/kernel_space/libusdm_drv.a
+
+override_dh_prep-deb-files:
+	sed -e 's/@KVERS@/$(KVERS)/g' debian/postinst.in > debian/postinst
+
