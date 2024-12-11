@@ -107,19 +107,19 @@ override_dh_auto_install:
 	cp quickassist/utilities/libusdm_drv/usdm_drv.ko $(MOD_DIR)/usdm_drv.ko
 
 	# Install firmware
-	mkdir -p debian/intel-qat/lib/firmware
-	cp quickassist/qat/fw/qat_c3xxx.bin debian/intel-qat/lib/firmware/qat_c3xxx.bin
-	cp quickassist/qat/fw/qat_c3xxx_mmp.bin debian/intel-qat/lib/firmware/qat_c3xxx_mmp.bin
-	cp quickassist/qat/fw/qat_c62x.bin debian/intel-qat/lib/firmware/qat_c62x.bin
-	cp quickassist/qat/fw/qat_c62x_mmp.bin debian/intel-qat/lib/firmware/qat_c62x_mmp.bin
-	cp quickassist/qat/fw/qat_d15xx.bin debian/intel-qat/lib/firmware/qat_d15xx.bin
-	cp quickassist/qat/fw/qat_d15xx_mmp.bin debian/intel-qat/lib/firmware/qat_d15xx_mmp.bin
-	cp quickassist/qat/fw/qat_200xx.bin debian/intel-qat/lib/firmware/qat_200xx.bin
-	cp quickassist/qat/fw/qat_200xx_mmp.bin debian/intel-qat/lib/firmware/qat_200xx_mmp.bin
-	cp quickassist/qat/fw/qat_c4xxx.bin debian/intel-qat/lib/firmware/qat_c4xxx.bin
-	cp quickassist/qat/fw/qat_c4xxx_mmp.bin debian/intel-qat/lib/firmware/qat_c4xxx_mmp.bin
-	cp quickassist/qat/fw/qat_895xcc.bin debian/intel-qat/lib/firmware/qat_895xcc.bin
-	cp quickassist/qat/fw/qat_895xcc_mmp.bin debian/intel-qat/lib/firmware/qat_895xcc_mmp.bin
+	mkdir -p debian/intel-qat/usr/share/qat/firmware
+	cp quickassist/qat/fw/qat_c3xxx.bin debian/intel-qat/usr/share/qat/firmware/qat_c3xxx.bin
+	cp quickassist/qat/fw/qat_c3xxx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_c3xxx_mmp.bin
+	cp quickassist/qat/fw/qat_c62x.bin debian/intel-qat/usr/share/qat/firmware/qat_c62x.bin
+	cp quickassist/qat/fw/qat_c62x_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_c62x_mmp.bin
+	cp quickassist/qat/fw/qat_d15xx.bin debian/intel-qat/usr/share/qat/firmware/qat_d15xx.bin
+	cp quickassist/qat/fw/qat_d15xx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_d15xx_mmp.bin
+	cp quickassist/qat/fw/qat_200xx.bin debian/intel-qat/usr/share/qat/firmware/qat_200xx.bin
+	cp quickassist/qat/fw/qat_200xx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_200xx_mmp.bin
+	cp quickassist/qat/fw/qat_c4xxx.bin debian/intel-qat/usr/share/qat/firmware/qat_c4xxx.bin
+	cp quickassist/qat/fw/qat_c4xxx_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_c4xxx_mmp.bin
+	cp quickassist/qat/fw/qat_895xcc.bin debian/intel-qat/usr/share/qat/firmware/qat_895xcc.bin
+	cp quickassist/qat/fw/qat_895xcc_mmp.bin debian/intel-qat/usr/share/qat/firmware/qat_895xcc_mmp.bin
 
 	# Install user libraries
 	mkdir -p debian/intel-qat/usr/lib

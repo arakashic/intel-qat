@@ -4,6 +4,10 @@ set -e
 
 case "$1" in
   configure)
+    # Install firmware
+    mkdir -p /lib/firmware/qat_fw_backup
+    mv /lib/firmware/qat*.bin /lib/firmware/qat_fw_backup/
+    cp /usr/share/qat/firmware/qat*.bin /lib/firmware/
     # Update module dependencies
     depmod -a @KVERS@
     # Update initramfs
