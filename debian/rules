@@ -136,6 +136,8 @@ override_dh_auto_install:
 	echo "SRIOV_ENABLE=1" >> debian/intel-qat/etc/default/qat
 	mkdir -p debian/intel-qat/usr/share/qat/conf
 	cp quickassist/utilities/adf_ctl/conf_files/* debian/intel-qat/usr/share/qat/conf/
+	mkdir -p debian/intel-qat/usr/share/qat/udev
+	cp 00-qat.rules debian/intel-qat/usr/share/qat/udev
 
 	# Install QAT service
 	mkdir -p debian/intel-qat/etc/init.d

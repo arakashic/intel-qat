@@ -41,25 +41,7 @@ case "$1" in
         fi
         #
         echo "Creating udev rules"
-        echo 'KERNEL=="qat_adf_ctl" MODE="0660" GROUP="qat" RUN+="/bin/chgrp qat $(bindir)/$(ADF_CTL_BIN)"' > /etc/udev/rules.d/00-qat.rules;
-        echo 'KERNEL=="qat_dev_processes" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules;
-        echo 'KERNEL=="usdm_drv" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules;
-        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/mkdir $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
-        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/chgrp qat $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
-        echo 'ACTION=="add", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/chmod 0770 $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
-        echo 'ACTION=="remove", DEVPATH=="/module/usdm_drv" SUBSYSTEM=="module" RUN+="/bin/rmdir $(HUGE_PAGE_DIR)"' >> /etc/udev/rules.d/00-qat.rules;
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x0435" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x0443" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x37c8" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x37c9" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x6f54" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x6f55" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x19e2" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x19e3" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18ee" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18ef" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18a0" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
-        echo 'KERNEL=="uio*", ATTRS{vendor}=="0x8086", ATTRS{device}=="0x18a1" MODE="0660" GROUP="qat"' >> /etc/udev/rules.d/00-qat.rules
+        cp /usr/share/qat/udev/00-qat.rules /etc/udev/rules.d/00-qat.rules
         ;;
 esac
 
