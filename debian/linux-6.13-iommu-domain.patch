@@ -1,0 +1,84 @@
+From: Yanfei Guo <yanf.guo@gmail.com>
+Subject: Support the device-based IOMMU domain API in Linux 6.13+
+
+Linux 6.13 removed iommu_domain_alloc(), which selected an IOMMU implementation
+from a bus. Select the first IOMMU-backed PCI device and use it with
+iommu_paging_domain_alloc() instead. This preserves the driver's existing
+single-domain behavior while using the supported device-based API.
+
+Linux 6.18 also removed the legacy EXTRA_CFLAGS Kbuild variable. Carry the
+vendor flags through subdir-ccflags-y for the utility and access-layer modules.
+
+diff --git a/quickassist/build_system/build_files/OS/linux_2.6_kernel_space_rules.mk b/quickassist/build_system/build_files/OS/linux_2.6_kernel_space_rules.mk
+--- a/quickassist/build_system/build_files/OS/linux_2.6_kernel_space_rules.mk
++++ b/quickassist/build_system/build_files/OS/linux_2.6_kernel_space_rules.mk
+@@ -61,2 +61,6 @@
+ KERNEL_RELEASE ?= $(shell cat $(KERNEL_SOURCE_ROOT)/include/config/kernel.release)
++ifeq ($(shell awk 'BEGIN { split("$(KERNEL_RELEASE)", v, "."); print (v[1] > 6 || (v[1] == 6 && v[2] >= 18)) }'),1)
++subdir-ccflags-y += $(EXTRA_CFLAGS)
++endif
++
+ KERNELVERSION := $(shell echo $(KERNEL_RELEASE) | cut -d'.' -f1,2)
+diff --git a/quickassist/lookaside/access_layer/src/Makefile b/quickassist/lookaside/access_layer/src/Makefile
+--- a/quickassist/lookaside/access_layer/src/Makefile
++++ b/quickassist/lookaside/access_layer/src/Makefile
+@@ -157,0 +158,4 @@
++KERNEL_RELEASE ?= $(shell cat $(KERNEL_SOURCE_ROOT)/include/config/kernel.release)
++ifeq ($(shell awk 'BEGIN { split("$(KERNEL_RELEASE)", v, "."); print (v[1] > 6 || (v[1] == 6 && v[2] >= 18)) }'),1)
++subdir-ccflags-y += $(EXTRA_CFLAGS)
++endif
+diff --git a/quickassist/qat/drivers/crypto/qat/qat_common/qdm.c b/quickassist/qat/drivers/crypto/qat/qat_common/qdm.c
+--- a/quickassist/qat/drivers/crypto/qat/qat_common/qdm.c
++++ b/quickassist/qat/drivers/crypto/qat/qat_common/qdm.c
+@@ -7,6 +7,7 @@
+ #define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + (c))
+ #endif
+ 
++#include <linux/err.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+@@ -197,19 +198,42 @@ int qdm_hugepage_iommu_map(dma_addr_t *iova, void *va_page, size_t size)
+ }
+ EXPORT_SYMBOL_GPL(qdm_hugepage_iommu_map);
+ 
++#if KERNEL_VERSION(6, 13, 0) <= LINUX_VERSION_CODE
++static int qdm_alloc_iommu_domain(struct device *dev, void *data)
++{
++	struct iommu_domain **new_domain = data;
++
++	if (!dev->iommu_group)
++		return 0;
++
++	*new_domain = iommu_paging_domain_alloc(dev);
++	return 1;
++}
++#endif
++
+ int __init qdm_init(void)
+ {
+ 	if (!qdm_iommu_present() || iommu_under_pt())
+ 		return 0;
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 2, 0)
+ 	domain = iommu_domain_alloc();
++#elif KERNEL_VERSION(6, 13, 0) <= LINUX_VERSION_CODE
++	bus_for_each_dev(&pci_bus_type, NULL, &domain,
++			 qdm_alloc_iommu_domain);
++	if (IS_ERR(domain)) {
++		int ret = PTR_ERR(domain);
++
++		domain = NULL;
++		pr_err("QAT: Failed to allocate a domain: %d\n", ret);
++		return ret;
++	}
+ #else
+ 	domain = iommu_domain_alloc(&pci_bus_type);
+ #endif
+ 	if (!domain) {
+ 		pr_err("QAT: Failed to allocate a domain\n");
+-		return -1;
++		return -ENODEV;
+ 	}
+ 	return 0;
+ }

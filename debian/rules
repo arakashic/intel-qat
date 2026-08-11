@@ -14,6 +14,9 @@ NJOBS    = -j$(or $(NUM_CPUS),1)
 	dh $@
 
 override_dh_auto_configure:
+	@if ! grep -q 'qdm_alloc_iommu_domain' quickassist/qat/drivers/crypto/qat/qat_common/qdm.c; then \
+		patch -p1 < debian/linux-6.13-iommu-domain.patch; \
+	fi
 	KERNEL_SOURCE_ROOT=/lib/modules/$(KVERS)/build ./configure --prefix=/usr --enable-kapi --enable-icp-sriov=host
 
 override_dh_auto_build:
@@ -158,4 +161,3 @@ override_dh_installdeb:
 
 override_dh_auto_test:
 	echo "Skip dh_auto_test"
-
